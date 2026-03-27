@@ -1,20 +1,27 @@
-# Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:17-jdk-alpine
+# ---- Stage 1: Build ----
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
-# Use a volume to store temp files (needed by Tomcat)
-VOLUME /tmp
+WORKDIR /app
 
-# Build arguments
-ARG JAR_FILE=target/*.jar
+# Copy Maven wrapper and pom first (caches dependencies)
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline -B
 
-# Copy the artifact into the image
-COPY ${JAR_FILE} app.jar
+# Copy source and build
+COPY src ./src
+RUN ./mvnw clean package -DskipTests -B
 
-# Expose port
+# ---- Stage 2: Run ----
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/target/booking-system-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Environment variables
 ENV SPRING_PROFILES_ACTIVE=prod
 
-# Run the jar file
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
