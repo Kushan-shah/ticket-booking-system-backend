@@ -2,6 +2,10 @@
 
 > A concurrency-safe backend system designed to prevent double booking in high-traffic scenarios.
 
+### 🟢 Live API Demos (Swagger UI)
+- **AWS EC2 + Docker Deploy:** [http://13.201.48.116/swagger-ui.html](http://13.201.48.116/swagger-ui.html)
+- **Render Cloud Deploy:** [https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html](https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html)
+
 ## 🛠 Tech Stack
 
 - **Backend**: Java 21, Spring Boot 3, Spring Security
