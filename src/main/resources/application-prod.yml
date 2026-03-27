@@ -1,0 +1,29 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+  data:
+    web:
+      pageable:
+        max-page-size: 50
+  flyway:
+    enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true  # Deliberately ENABLED in Prod for Placement Interview Demos
+  swagger-ui:
+    enabled: true  # Deliberately ENABLED in Prod for Placement Interview Demos
+
+jwt:
+  secret: ${JWT_SECRET}
+  expirationMs: 86400000

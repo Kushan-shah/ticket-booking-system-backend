@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: booking_app_prod
+    ports:
+      - "80:8080"  # Expose port 80 directly on EC2
+    env_file:
+      - .env  # Reads variables directly from the .env file on your server
+    networks:
+      - backend
+
+networks:
+  backend:
