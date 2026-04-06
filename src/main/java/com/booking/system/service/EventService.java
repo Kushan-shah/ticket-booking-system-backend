@@ -34,6 +34,18 @@ public class EventService {
         return mapToEventResponse(getEventEntity(id));
     }
 
+    @Transactional
+    public EventResponse createEvent(com.booking.system.dto.CreateEventRequest request) {
+        Event event = Event.builder()
+                .name(request.getName())
+                .location(request.getLocation())
+                .date(request.getDate())
+                .build();
+        
+        Event saved = eventRepository.save(event);
+        return mapToEventResponse(saved);
+    }
+
     private EventResponse mapToEventResponse(Event event) {
         return EventResponse.builder()
                 .id(event.getId())
