@@ -1,6 +1,15 @@
 # Ticket Booking System Backend
 
-> A concurrency-safe backend system designed to prevent double booking in high-traffic scenarios.
+> A high-concurrency ticket booking system designed to prevent double booking under race conditions.
+
+## 🚀 Key Highlights
+
+- Concurrency-safe booking system preventing double bookings using Optimistic Locking
+- Conflict detection with HTTP 409 under concurrent seat booking attempts
+- Seat locking with expiration using scheduled cleanup jobs
+- Eliminated N+1 queries using EntityGraph (JOIN FETCH optimization)
+- Production-ready system with Flyway migrations, JWT auth, and Docker deployment
+- Live deployed APIs (AWS + Render) with Swagger UI
 
 ### 🟢 Live API Demos (Swagger UI)
 - **AWS EC2 + Docker Deploy:** [http://13.201.48.116/swagger-ui.html](http://13.201.48.116/swagger-ui.html)
@@ -24,42 +33,38 @@ Traditional ticket booking systems suffer from race conditions during high traff
 
 This project solves that problem by implementing a concurrency-safe booking system using Optimistic Locking and transactional guarantees.
 
-## 👨‍💻 My Contributions
+## 🧠 Core Engineering Decision
 
-- Designed and implemented a concurrency-safe booking system using Optimistic Locking to prevent double booking.
-- Built complete RESTful APIs with Spring Boot following clean layered architecture.
-- Implemented JWT-based stateless authentication and role-based access control (RBAC).
-- Developed seat locking mechanism with expiration using scheduled background jobs.
-- Optimized database performance using indexing and solved N+1 query problem using EntityGraph.
-- Integrated Flyway for schema versioning and ensured production-ready database management.
-- Deployed application using Docker and configured for cloud environments (AWS/Render).
+### Optimistic Locking vs Pessimistic Locking
 
-## 📚 Key Learnings
-
-- Handling race conditions in distributed systems.
-- Trade-offs between optimistic vs pessimistic locking.
-- Designing REST APIs.
-- Importance of database indexing and query optimization.
+- Chose **Optimistic Locking** to maximize throughput under high read scenarios.
+- Avoided DB-level locks (Pessimistic) that block concurrent transactions.
+- Conflict handled at the application level using version mismatch → HTTP 409.
+- **👉 Trade-off:** Higher retry rate required under extreme contention.
+- **👉 Benefit:** Better scalability and lower database lock contention.
 
 ## 🚀 Backend Architecture Features
 
-To ensure this application stands out in rigorous technical interviews, it implements the following backend optimizations:
+### 🔹 Concurrency & Consistency
+- **Optimistic Locking (`@Version`)**: Ensures data consistency and prevents double booking under concurrent requests.
+- **409 Conflict Handling**: Gracefully fails fast when a version mismatch occurs.
+- **Seat Locking with Expiry**: A background `@Scheduled` cron job releases abandoned 5-minute seat locks.
 
-*   **1. Zero Double-Bookings**: Utilizes Hibernate **Optimistic Locking (`@Version`)** to ensure data consistency and prevent double booking under concurrent requests.
-*   **2. N+1 Query Eradication**: Uses Spring Data JPA `@EntityGraph` to force optimized `LEFT OUTER JOIN FETCH` queries, preventing Hibernate from executing hundreds of lazy-loading micro-queries during pagination.
-*   **3. Self-Cleaning Database**: A background `@Scheduled` Cron Job runs every 60 seconds to execute an O(1) indexed query (`idx_seats_status_locked`), automatically releasing abandoned 5-minute seat locks.
-*   **4. Security Validation**: Enforces strict `@Pattern` Regex on user registration (1 Upper, 1 Lower, 1 Num, 1 Special Char, min 8).
-*   **5. Graceful Cloud Shutdowns**: Tomcat is configured with a 30s Graceful Shutdown timeout to prevent active database transactions from being corrupted during AWS/Render server scaling events.
-*   **6. Universal Timezone Parity**: Forced JVM-wide `UTC` initialization via `@PostConstruct` ensures seat-lock expirations behave identically on local machines and distributed cloud servers.
-*   **7. Data Dump Attack Prevention**: API Pagination is strictly capped (`max-page-size: 50`) to prevent malicious actors from blowing up the JVM Heap Memory.
-*   **8. Stateless Authentication**: Sessions are entirely disabled (`SessionCreationPolicy.STATELESS`) in favor of horizontally scalable HMAC-SHA256 Signed JSON Web Tokens (JWT).
-*   **9. CORS Vulnerability Patched**: Explictly disabled `allowCredentials(true)` when using wildcard origins to prevent modern browser preflight request failures.
-*   **10. Open-In-View Disabled**: Explicitly disabled the `spring.jpa.open-in-view` anti-pattern to prevent database connection pool exhaustion.
-*   **11. SLF4J Logging**: Comprehensive `log.info` injected across the Auth, Booking, and Background Scheduler lifecycles for true observability.
-*   **12. ANSI Standard Database Versioning**: Complete bypass of Hibernate `ddl-auto`. Schema is strictly managed by **Flyway Migrations** (`V1__init.sql`) utilizing H2/PostgreSQL compatible `BIGINT GENERATED BY DEFAULT AS IDENTITY`.
-*   **13. Clean Architecture API Contract**: DTOs isolate internal Data Entities from external API payloads. Endpoints are fully documented interactively using **Swagger UI**.
-*   **14. Handled Exception Overflows**: A `@ControllerAdvice` Global Exception Handler catches `MethodArgumentNotValidException` and `OptimisticLockingFailureException`, mapping them strictly to JSON HTTP 400 and 409 codes without leaking 500 Stack Traces.
-*   **15. CI/CD Ready**: Native **Maven Wrapper** and full **Docker Compose** configurations guarantee 1-click execution across any operating system or DevOps pipeline.
+### 🔹 Performance Optimizations
+- **EntityGraph**: Eradicates N+1 query problems by forcing optimized `LEFT OUTER JOIN FETCH` queries during pagination.
+- **Indexed Queries**: Uses an O(1) composite index (`idx_seats_status_locked`) for the scheduling service.
+- **Pagination Caps**: API Pagination strictly capped (`max-page-size: 50`) to prevent heap exhaustion.
+
+### 🔹 Production Readiness
+- **Flyway Migrations**: Complete bypass of Hibernate `ddl-auto`. Schema is strictly versioned utilizing `BIGINT GENERATED BY DEFAULT AS IDENTITY`.
+- **Graceful Shutdown**: Tomcat configured with 30s timeout to prevent active transaction corruption.
+- **UTC Consistency**: Forced JVM-wide `UTC` initialization ensures server parity.
+
+### 🔹 Security & API Design
+- **JWT Auth (Stateless)**: Sessions disabled in favor of horizontally scalable HMAC-SHA256 tokens.
+- **RBAC**: Role-based access control protecting administrative endpoints.
+- **DTO Isolation**: Clean architecture segregating internal Data Entities from external payloads.
+- **Global Exception Handling**: Mapped exceptions preventing 500 Stack Traces leakage.
 
 ---
 
