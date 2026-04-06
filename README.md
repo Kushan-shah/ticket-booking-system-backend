@@ -145,6 +145,27 @@ erDiagram
 
 ---
 
+## 🚦 Load & Contention Testing (Grafana k6)
+
+To physically verify the Optimistic Locking architecture, the system is bundled with a `k6` load testing script (`k6-stress-test.js`). 
+
+The test simulates **50 concurrent Virtual Users** attempting to lock the **exact same seat** strictly simultaneously. 
+
+**Results of the Race Condition Validation:**
+```text
+  █ TOTAL RESULTS 
+
+    ✗ is success (201)
+      ↳  1% — ✓ 1 / ✗ 99
+    ✗ is conflict (409)
+      ↳  99% — ✓ 99 / ✗ 1
+    ✓ no server crashes (500)
+      ↳  100% — ✓ 100 / ✗ 0
+```
+*Conclusion: Data integrity is strictly maintained. Even under extreme contention, exactly 1 user acquired the lock, and 99 users were safely rejected with a `409 Conflict` (Version Mismatch) without a single system deadlock.*
+
+---
+
 ## 🛠 Local Setup & Running the Application
 
 ### Option 1: Using Docker (Recommended for presentation)
