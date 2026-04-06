@@ -43,7 +43,7 @@ export default function (data) {
     const url = 'http://localhost:8080/bookings/lock-seat';
     const payload = JSON.stringify({
         eventId: 1, // Must exist in your DB (from V2__seed.sql)
-        seatId: 1   // MUST be the exact same seat to force a concurrency race condition
+        seatNumber: "A3"   // MUST be the exact same seat to force a concurrency race condition
     });
 
     const params = {
