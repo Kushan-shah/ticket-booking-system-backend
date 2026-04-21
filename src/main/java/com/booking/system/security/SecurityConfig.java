@@ -50,8 +50,15 @@ public class SecurityConfig {
                         .requestMatchers("/events/**").permitAll()
                         // H2 Console (dev only)
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Swagger endpoints
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Static landing page & Docs
+                        .requestMatchers(
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/"),
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/index.html"),
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/docs"),
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/v3/api-docs/**"),
+                                org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/error")
+                        ).permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
@@ -80,5 +87,17 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/", 
+                "/index.html", 
+                "/docs", 
+                "/swagger-ui/**", 
+                "/v3/api-docs/**", 
+                "/error"
+        );
     }
 }

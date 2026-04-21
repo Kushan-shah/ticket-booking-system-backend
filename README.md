@@ -1,4 +1,4 @@
-# Ticket Booking System Backend
+# SeatLock — Ticket Booking System Backend
 
 > A high-concurrency ticket booking system designed to prevent double booking under race conditions.
 

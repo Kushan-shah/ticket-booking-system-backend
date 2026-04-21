@@ -15,9 +15,12 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Ticket Booking System API")
+                .info(new Info().title("SeatLock — High-Concurrency Booking Engine")
                         .version("1.0")
                         .description("Production level backend API with Optimistic Locking"))
+                .addServersItem(new io.swagger.v3.oas.models.servers.Server()
+                        .url("https://booking.kushan.codes")
+                        .description("AWS Production Cluster"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)

@@ -23,6 +23,7 @@ springdoc:
     enabled: true  # Deliberately ENABLED in Prod for Placement Interview Demos
   swagger-ui:
     enabled: true  # Deliberately ENABLED in Prod for Placement Interview Demos
+    path: /docs
 
 jwt:
   secret: ${JWT_SECRET}
