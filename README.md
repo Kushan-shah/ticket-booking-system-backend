@@ -14,9 +14,10 @@
 - Horizontally scalable architecture with **stateless JWT authentication**
 - Production-ready with Flyway migrations, Docker deployment, and live APIs (AWS + Render)
 
-### 🟢 Live API Demos (Swagger UI)
-- **AWS EC2 + Docker Deploy:** [http://13.201.48.116/swagger-ui.html](http://13.201.48.116/swagger-ui.html)
-- **Render Cloud Deploy:** [https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html](https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html)
+### 🟢 Live Production System
+- **🌐 Landing Page:** [https://booking.kushan.codes](https://booking.kushan.codes)
+- **📚 Interactive API Docs (Swagger):** [https://booking.kushan.codes/swagger-ui/index.html](https://booking.kushan.codes/swagger-ui/index.html)
+- **☁️ Render Backup:** [https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html](https://ticket-booking-api-vjjy.onrender.com/swagger-ui.html)
 
 ## 🛠 Tech Stack
 
@@ -256,7 +257,7 @@ For a more robust production environment.
 ## 📓 API Endpoints & Usage
 
 Once running, interactive API documentation is available at:
-`http://localhost:8080/swagger-ui.html`
+`http://localhost:8080/swagger-ui.html` or the live version at [`https://booking.kushan.codes/swagger-ui/index.html`](https://booking.kushan.codes/swagger-ui/index.html)
 
 A **Postman Collection** is included in the project root: `postman_collection.json`. Simply import this file into Postman to test all endpoints.
 
